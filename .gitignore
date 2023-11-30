@@ -1,0 +1,8 @@
+.idea/
+env/
+hanseifood/.idea/
+hanseifood/logs
+hanseifood/.env
+
+*.pyc
+__pycache__/

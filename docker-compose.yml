@@ -1,0 +1,45 @@
+services:
+  mysql:
+    image: mysql
+    container_name: mysql_service
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      TZ: Asia/Seoul
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: hansei_food
+      MYSQL_USER: hansei
+      MYSQL_PASSWORD: hansei_food
+    networks:
+      - django-network
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD']
+      interval: 10s
+      timeout: 2s
+      retries: 100
+    ports:
+      - "3306:3306"
+
+  server:
+    container_name: hanseifood_was
+    volumes:
+      - server-log-data:/app/src/hanseifood/logs
+    build:
+      context: .
+      dockerfile: ./dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - django-network
+    environment:
+      - TZ=Asia/Seoul
+
+networks:
+  django-network:
+
+volumes:
+  mysql-data:
+  server-log-data:
